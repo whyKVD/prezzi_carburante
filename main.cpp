@@ -2,7 +2,6 @@
 #include <iostream>
 #include <cstring>
 #include <string>
-#include <unordered_map>
 
 //idImpianto;descCarburante;prezzo;isSelf;dtComu
 struct prezzo{
@@ -13,6 +12,49 @@ struct prezzo{
   char dateTime[19];
 };
 
+struct Node{
+  char descCarburante[25];
+  int numPrezzi;
+  float totPrezzi;
+  Node *next;
+};
+
+struct List{
+  Node *head;
+};
+
+void addNode(Node *node, List *list){
+  if(list->head == NULL){
+    list->head = node;
+    return;
+  }
+  
+  Node *root = list->head;
+  while(root->next == NULL){
+    root = root->next;
+  }
+  
+  root->next = node;
+}
+
+void updateNode(List *list, char descCarburante[25], float price){
+  if(list->head == NULL){
+    return;
+  }
+
+  Node *root = list->head;
+  while(root != NULL && strcmp(root->descCarburante, descCarburante) == 0){
+    root = root->next;
+  }
+
+  if(root == NULL){
+    return;
+  }
+
+  root->totPrezzi += price;
+  root->numPrezzi += 1;
+}
+
 using namespace std;
 
 int main(int argc, char *argv[]) {
@@ -21,8 +63,6 @@ int main(int argc, char *argv[]) {
     return 0;
   }
   
-  unordered_map<char[25],float> map;
-
   ifstream fIn(argv[1], ios::in);
 
   char line[100] = {};
@@ -48,14 +88,10 @@ int main(int argc, char *argv[]) {
           break;
         case 1:
           strcpy(p.descCarburante,record);
-          if(map.find(p.descCarburante) == map.end()){
-            map[p.descCarburante] = 0.0f;
-          }
           record = {};
           break;
         case 2:
           p.price = atof(record);
-          map[p.descCarburante] += p.price;
           break;
         case 3:
           p.isSelf = atoi(record);
@@ -80,8 +116,6 @@ int main(int argc, char *argv[]) {
     cout << "reading..."  << lineNum /*<< endl*/ << "\r";
     lineNum++;
   }
-
-  cout << map.begin()->first << endl;
 
   return 0;
 }
