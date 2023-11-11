@@ -16,35 +16,43 @@ struct Node{
   char descCarburante[25];
   int numPrezzi;
   float totPrezzi;
-  Node *next;
+  Node *nextRight;
+  Node *nextLeft;
 };
 
-struct List{
-  Node *head;
+struct Tree{
+  Node *root;
 };
 
-void addNode(Node *node, List *list){
-  if(list->head == NULL){
-    list->head = node;
+void addNode(Node *node, Tree *list){
+  if(list->root == NULL){
+    list->root = node;
     return;
   }
   
-  Node *root = list->head;
-  while(root->next == NULL){
-    root = root->next;
+  Node *root = list->root;
+  int compared = strcmp(root->descCarburante, node->descCarburante);
+  if( compared > 0 ){
+    searchRight(node);
+  }else if( compared < 0 ){
+    searchLeft(node);
+  }
+
+  while(root->nextRight == NULL){
+    root = root->nextRight;
   }
   
-  root->next = node;
+  root->nextRight = node;
 }
 
-void updateNode(List *list, char descCarburante[25], float price){
-  if(list->head == NULL){
+void updateNode(Tree *list, char descCarburante[25], float price){
+  if(list->root == NULL){
     return;
   }
 
-  Node *root = list->head;
+  Node *root = list->root;
   while(root != NULL && strcmp(root->descCarburante, descCarburante) == 0){
-    root = root->next;
+    root = root->nextRight;
   }
 
   if(root == NULL){
